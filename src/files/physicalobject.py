@@ -2,6 +2,7 @@ import pyglet
 from . import util
 import numpy as np
 from itertools import combinations
+import random
 
 class PhysicalObject(pyglet.sprite.Sprite):
     """A sprite with physical properties such as velocity"""
@@ -17,8 +18,12 @@ class PhysicalObject(pyglet.sprite.Sprite):
         self.r = np.array((self.x, self.y))
         self.v = np.array((self.vx, self.vy))
 
-        # Flag to remove this object from the game_object list
+        # Use dead flag to indicate a tile is in its eventual home location
         self.dead = False
+
+        # the x,y for this objects home
+        self.homex = 0
+        self.homey = 0
 
         # List of new objects to go in the game_objects list
         self.new_objects = []
@@ -40,16 +45,28 @@ class PhysicalObject(pyglet.sprite.Sprite):
     def update(self, dt):
         """This method should be called every frame."""
 
-        # Update position according to velocity and time
-        self.x += self.vx * dt
-        self.y += self.vy * dt
+        # Update position according to velocity and time - Only update if not dead
 
-        self.r = np.array((self.x, self.y))
-        self.v = np.array((self.vx, self.vy))
+        if self.dead is False:
+            self.x += self.vx * dt
+            self.y += self.vy * dt
 
         # Wrap around the screen if necessary
         #self.check_bounds_wrap()
-        self.check_bounds_wrap()
+        self.check_bounds_offbottom()
+
+    def check_bounds_offbottom(self):
+        """If the tile falls off the bottom, put it back up above"""
+        min_y = -self.image.height
+
+        if self.y < min_y:
+            # Change this to 0.25 or the like later, but force the sorting for now
+            if (random.random() < 1.0):
+                #print('DLM: check_bounds_offbottom: putting tile in right column')
+                self.x = self.homex
+
+            self.y = 700
+            self.vy = random.randrange(-120, -50)
 
     def check_bounds_wrap(self):
         """Wrap around the edges"""

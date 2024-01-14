@@ -23,6 +23,8 @@ level_label = pyglet.text.Label(text="Testing - PicSlide!", x=400, y=575, anchor
 
 counter = pyglet.window.FPSDisplay(window=game_window)
 
+game_objects = []
+
 all_pics = []
 pic_tiles = []
 DLMcount = 0
@@ -33,7 +35,7 @@ def init():
 
 
 def reset_level():
-    global DLMcount, num_things, all_pics, pic_tiles
+    global DLMcount, num_things, all_pics, pic_tiles, myWin, game_objects
 
     DLMcount += 1
     num_things = int(myWin.X/myTileSize.X * myWin.Y/myTileSize.Y)
@@ -59,25 +61,33 @@ def reset_level():
     # Load up the tiles
     pic_tiles = load.things(num_things, myWin, main_batch)
 
+    # Set some tile-related info
     i, j = 0,0
     for tile in pic_tiles:
         picTile = img.get_region(x=(i*myTileSize.X), y=(j*myTileSize.Y), width=myTileSize.X, height=myTileSize.Y)
         tile.image = picTile
-        tile.x = i*myTileSize.X
-        tile.y = j*myTileSize.Y
+
+        # These locations are where they go in the original image
+        #tile.x = i*myTileSize.X
+        #tile.y = j*myTileSize.Y
+        # Choose some random starting locations
+        tile.x = random.randrange(0, myWin.X)
+        #tile.y = random.randrange(700, 1200)
+        tile.y = random.randrange(100, 600)
+
+        # We'll test against these later to see if a tile made it home
+        tile.homex = i*myTileSize.X
+        tile.homey = j*myTileSize.Y
+
+        tile.vx = 0
+        tile.vy = random.randrange(-120, -50)
+
         i += 1
         if i == 8:
             j += 1
             i = 0
 
     game_objects = pic_tiles
-
-    # Things to do on the game_ojects before kickoff
-    for obj in game_objects:
-        obj.vx = 0
-        obj.vy = 0
-
-
 
 
 #def timerFunc (dt):
@@ -103,10 +113,40 @@ def on_draw():
     counter.draw()
 
 def update(dt):
-    global DLMcount
+    global DLMcount, game_objects
 
     DLMcount += 1
+    for obj in game_objects:
+        obj.update(dt)
 
+        if (obj.dead is False):
+            # See if a tile made it home
+            if obj.x == obj.homex:
+                # If the tile is in the right row (or just under)
+                objIndex = game_objects.index(obj)
+                #print('DLM: picslide:update:objIndex: '+str(objIndex))
+                #if (objIndex < 8):
+                #    obj.opacity = random.randrange(160, 255)
+                if (obj.homey == obj.y) or ((obj.y < obj.homey) and (obj.homey-obj.y < 5)) :
+                    # In case the y gets incremented by more than one, the above says if it's at or less than 5 pixels below
+                    #print('DLM: obj.y: '+str(obj.y)+' obj.homey: '+str(obj.homey))
+                    # If the tile below is dead or there's no tile below
+
+                    if (objIndex < 8):
+                        # One of the bottom row tiles
+                        obj.dead = True
+                        obj.y = obj.homey
+                        #obj.opacity = 128
+                        #print('DLM: picslide:update:Home? True for objIndex('+str(objIndex)+') on the bottom')
+                    else:
+                        objBelow = game_objects[objIndex-8]
+                        #print('DLM: picslide:update:objBelowIndex: '+str(objIndex-8))
+
+                        if objBelow.dead is True:
+                            obj.dead = True
+                            obj.y = obj.homey
+                            #obj.opacity = 128
+                            #print('DLM: picslide:update:Home? True for objIndex('+str(objIndex)+') on another tile')
 
 
 if __name__ == "__main__":

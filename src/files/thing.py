@@ -16,6 +16,7 @@ class Thing(physicalobject.PhysicalObject):
     def update(self, dt):
         super(Thing, self).update(dt)
         #self.rotation += self.rotate_speed * dt
+        self.rotate_speed = 0
 
     def handle_collision_with(self, other_object):
         super(Thing, self).handle_collision_with(other_object)

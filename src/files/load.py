@@ -5,7 +5,7 @@ from . import thing, resources, util
 DLMTest = 0
 
 def things(num_things, myWin, batch=None):
-    """Generate thing objects with random positions and velocities, not close to the player"""
+    """Generate thing objects with random positions and velocities"""
     things = []
     for i in range(num_things):
         #print('DLM: num_things: '+str(num_things))
@@ -28,10 +28,8 @@ def things(num_things, myWin, batch=None):
 
         #print('DLM: thing.width: '+str(new_thing.width)+' thing.height: '+str(new_thing.height))
 
-        thing_x = i*10
-        #print('DLM:new_thing.height'+str(new_thing.height))
-        thing_y = 300
-
+        thing_x, thing_y = 0,0
+        
         new_thing.x = thing_x
         new_thing.y = thing_y
         new_thing.n = num_things

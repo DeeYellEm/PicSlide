@@ -4,9 +4,8 @@ from pyglet import image
 
 from files import thing, load, resources
 from collections import namedtuple
-import random
-import os
-import glob
+import random, os, glob, time
+
 
 # Set up a window
 myWindow = namedtuple('myWindow', ['X', 'Y'])
@@ -39,7 +38,7 @@ def reset_level():
 
     DLMcount += 1
     num_things = int(myWin.X/myTileSize.X * myWin.Y/myTileSize.Y)
-    print('DLM: num_things: '+str(num_things))
+    #print('DLM: num_things: '+str(num_things))
 
     # list to store filename present in current directory
     files = []
@@ -51,8 +50,8 @@ def reset_level():
     #    if os.path.isfile(os.path.join('../resources', file_path)):
     #        files.append(str('../resources/'+file_path))
             #print("DLM: Adding file_path: "+str(file_path))
-    for file in files:
-        print('DLM: resource images: '+str(file))
+    #for file in files:
+        #print('DLM: resource images: '+str(file))
 
     img_path = relevant_path+'/'+random.choice(files)
     print("DLM: Random Image: "+img_path)
@@ -94,7 +93,7 @@ def reset_level():
 #    globalVx = random.randrange(20, 80)
 #    if (random.random() < 0.5):
 #        globalVx = -1*globalVx
-    #print('DLM: timerFunc():globalVx: '+str(globalVx))
+#    print('DLM: timerFunc():globalVx: '+str(globalVx))
 #    for obj in game_objects:
 #        obj.vx = (0.4/obj.scale) * globalVx
 #        #print('DLM: timerFunc: obj.scale: '+str(obj.scale)+' obj.vx:'+str(obj.vx))
@@ -116,6 +115,7 @@ def update(dt):
     global DLMcount, game_objects
 
     DLMcount += 1
+    DeadCount = 0
     for obj in game_objects:
         obj.update(dt)
 
@@ -147,6 +147,14 @@ def update(dt):
                             obj.y = obj.homey
                             #obj.opacity = 128
                             #print('DLM: picslide:update:Home? True for objIndex('+str(objIndex)+') on another tile')
+        else:
+            DeadCount +=1
+
+        if DeadCount == 64:
+            #print('DLM:update: DeadCount == 64 - Pic is done.')
+            time.sleep(5.0)
+            reset_level()
+
 
 
 if __name__ == "__main__":

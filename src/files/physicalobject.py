@@ -61,11 +61,11 @@ class PhysicalObject(pyglet.sprite.Sprite):
 
         if self.y < min_y:
             # Change this to 0.25 or the like later, but force the sorting for now
-            if (random.random() < 1.0):
+            if (random.random() < 0.5):
                 #print('DLM: check_bounds_offbottom: putting tile in right column')
                 self.x = self.homex
 
-            self.y = 700
+            self.y = 675
             self.vy = random.randrange(-120, -50)
 
     def check_bounds_wrap(self):
